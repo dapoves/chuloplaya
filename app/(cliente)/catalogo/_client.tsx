@@ -76,7 +76,7 @@ export function CatalogClient({
       <div
         style={{
           flexShrink: 0,
-          paddingTop: 54,
+          paddingTop: 24,
           background: "var(--cp-surface)",
           boxShadow: "var(--cp-shadow-sm)",
           position: "sticky",
