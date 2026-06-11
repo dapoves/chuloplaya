@@ -5,7 +5,10 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthResult = { ok: true } | { ok: false; error: string };
+export type AuthResult =
+  | { ok: true }
+  | { ok: false; error: string }
+  | { ok: false; redirect: string };
 
 /** Origen absoluto de la app para construir el emailRedirectTo del magic link. */
 async function siteOrigin() {
@@ -47,6 +50,16 @@ export async function createAccount(input: {
   if (!user) return { ok: false, error: "Sin sesión activa." };
   if (!user.is_anonymous) return { ok: false, error: "Ya tienes una cuenta." };
 
+  const { data: staffRole } = await supabase.rpc("get_staff_role_by_email", {
+    lookup_email: email,
+  });
+  if (staffRole) {
+    return {
+      ok: false,
+      redirect: `/gestion/login?email=${encodeURIComponent(email)}`,
+    };
+  }
+
   // Guardamos nombre/teléfono antes de promover (mismo id tras confirmar).
   const { error: profileError } = await supabase
     .from("profiles")
@@ -74,6 +87,17 @@ export async function signInWithEmail(email: string): Promise<AuthResult> {
   if (!clean) return { ok: false, error: "Introduce tu email." };
 
   const supabase = await createClient();
+
+  const { data: staffRole } = await supabase.rpc("get_staff_role_by_email", {
+    lookup_email: clean,
+  });
+  if (staffRole) {
+    return {
+      ok: false,
+      redirect: `/gestion/login?email=${encodeURIComponent(clean)}`,
+    };
+  }
+
   const origin = await siteOrigin();
   const { error } = await supabase.auth.signInWithOtp({
     email: clean,

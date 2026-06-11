@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +21,8 @@ export default function LoginPage() {
     login,
     null
   );
+  const searchParams = useSearchParams();
+  const prefillEmail = searchParams.get("email") ?? "";
 
   return (
     <main className="flex min-h-dvh items-center justify-center p-4">
@@ -40,6 +43,7 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 placeholder="tu@email.com"
+                defaultValue={prefillEmail}
                 required
               />
             </div>

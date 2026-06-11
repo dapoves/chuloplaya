@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { createAccount, signInWithEmail } from "../../_actions/auth";
 import { ChuloButton } from "../../_components/chulo-button";
@@ -31,6 +32,7 @@ export function PromoteAccount({
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const router = useRouter();
 
   const submit = () => {
     start(async () => {
@@ -39,8 +41,13 @@ export function PromoteAccount({
         mode === "create"
           ? await createAccount({ email, name, phone })
           : await signInWithEmail(email);
-      if (res.ok) setSent(true);
-      else setError(res.error);
+      if (res.ok) {
+        setSent(true);
+      } else if ("redirect" in res && res.redirect) {
+        router.push(res.redirect);
+      } else if ("error" in res) {
+        setError(res.error);
+      }
     });
   };
 

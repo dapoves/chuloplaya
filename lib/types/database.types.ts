@@ -392,6 +392,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_staff_role_by_email: {
+        Args: { lookup_email: string }
+        Returns: string | null
+      }
       accept_order: { Args: { p_order_id: string }; Returns: number }
       accept_order_item: { Args: { p_item_id: string }; Returns: boolean }
       list_clients_with_email: {
