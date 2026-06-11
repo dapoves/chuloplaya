@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-
 import { createAccount, signInWithEmail } from "../../_actions/auth";
 import { ChuloButton } from "../../_components/chulo-button";
 import { Field } from "../../_components/field";
@@ -32,7 +30,6 @@ export function PromoteAccount({
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  const router = useRouter();
 
   const submit = () => {
     start(async () => {
@@ -44,7 +41,7 @@ export function PromoteAccount({
       if (res.ok) {
         setSent(true);
       } else if ("redirect" in res && res.redirect) {
-        router.push(res.redirect);
+        window.location.href = res.redirect;
       } else if ("error" in res) {
         setError(res.error);
       }
