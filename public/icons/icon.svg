@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#FFF7EC"/>
+  <!-- Sun -->
+  <circle cx="256" cy="190" r="80" fill="#FFC23C"/>
+  <!-- Sun rays -->
+  <line x1="256" y1="80" x2="256" y2="56" stroke="#FFC23C" stroke-width="14" stroke-linecap="round"/>
+  <line x1="330" y1="116" x2="346" y2="100" stroke="#FFC23C" stroke-width="14" stroke-linecap="round"/>
+  <line x1="364" y1="190" x2="388" y2="190" stroke="#FFC23C" stroke-width="14" stroke-linecap="round"/>
+  <line x1="330" y1="264" x2="346" y2="280" stroke="#FFC23C" stroke-width="14" stroke-linecap="round"/>
+  <line x1="256" y1="300" x2="256" y2="324" stroke="#FFC23C" stroke-width="12" stroke-linecap="round"/>
+  <line x1="182" y1="264" x2="166" y2="280" stroke="#FFC23C" stroke-width="14" stroke-linecap="round"/>
+  <line x1="128" y1="190" x2="104" y2="190" stroke="#FFC23C" stroke-width="14" stroke-linecap="round"/>
+  <line x1="182" y1="116" x2="166" y2="100" stroke="#FFC23C" stroke-width="14" stroke-linecap="round"/>
+  <!-- Wave 1 -->
+  <path d="M48 348 Q130 308 256 348 T464 348" stroke="#0A6E9E" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <!-- Wave 2 -->
+  <path d="M48 396 Q130 356 256 396 T464 396" stroke="#0A6E9E" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.45"/>
+</svg>

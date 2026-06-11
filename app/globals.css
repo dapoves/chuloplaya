@@ -1,0 +1,449 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Chulo Playa · Tema Costa (zona cliente)
+   Aplica únicamente bajo [data-theme="costa"] para no afectar la
+   zona /gestion (que usa los tokens shadcn estándar).
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="costa"] {
+  --cp-bg: #EAF4F7;
+  --cp-surface: #FFFFFF;
+  --cp-surface-alt: #F4ECDC;
+  --cp-ink: #0E2A38;
+  --cp-ink-soft: #4B6B78;
+  --cp-ink-faint: #8AA3AD;
+  --cp-line: rgba(14, 42, 56, 0.10);
+  --cp-primary: #0A6E9E;
+  --cp-primary-10: rgba(10, 110, 158, 0.10);
+  --cp-primary-16: rgba(10, 110, 158, 0.16);
+  --cp-primary-deep: #075578;
+  --cp-on-primary: #FFFFFF;
+  --cp-accent: #FFC23C;
+  --cp-accent-14: rgba(255, 194, 60, 0.14);
+  --cp-on-accent: #0E2A38;
+  --cp-coral: #FF7657;
+  --cp-coral-14: rgba(255, 118, 87, 0.14);
+  --cp-card-radius: 22px;
+  --cp-btn-radius: 16px;
+  --cp-pill-radius: 999px;
+  --cp-shadow-sm: 0 2px 8px rgba(10, 42, 60, 0.06);
+  --cp-shadow-md: 0 10px 30px rgba(10, 70, 110, 0.12);
+  --cp-shadow-lg: 0 24px 50px rgba(10, 70, 110, 0.18);
+
+  background: var(--cp-bg);
+  color: var(--cp-ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+[data-theme="costa"] .cp-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Animaciones del handoff */
+@keyframes cp-pop {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes cp-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+@keyframes cp-slide-in-right {
+  from { opacity: 0; transform: translateX(34px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes cp-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes cp-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes cp-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes cp-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Nuevas animaciones */
+@keyframes cp-celebrate {
+  0%   { opacity: 0; transform: scale(0); }
+  50%  { opacity: 1; transform: scale(1.15); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+@keyframes cp-shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(3px); }
+  40%  { transform: translateX(-3px); }
+  60%  { transform: translateX(2px); }
+  80%  { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+@keyframes cp-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes cp-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50%      { opacity: 1; transform: scale(1.05); }
+}
+@keyframes cp-tap {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes cp-list-item {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cp-slide-down-fade {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(4px); }
+}
+@keyframes cp-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.cp-anim-pop      { animation: cp-pop 400ms cubic-bezier(.2,.85,.3,1) both; }
+.cp-anim-blink    { animation: cp-blink 1.1s ease-in-out infinite; }
+.cp-anim-slide-in { animation: cp-slide-in-right 340ms cubic-bezier(.2,.85,.3,1) both; }
+.cp-anim-slide-up { animation: cp-slide-up 280ms cubic-bezier(.2,.9,.3,1) both; }
+.cp-anim-fade-in  { animation: cp-fade-in 200ms ease-out both; }
+.cp-anim-drop-in  { animation: cp-drop-in 680ms cubic-bezier(.16,1,.3,1) both; }
+.cp-anim-rise-in  { animation: cp-rise-in 540ms cubic-bezier(.16,1,.3,1) both; }
+.cp-anim-celebrate { animation: cp-celebrate 600ms cubic-bezier(.175,.885,.32,1.275) both; }
+.cp-anim-shake    { animation: cp-shake 400ms ease-out both; }
+.cp-anim-shimmer  {
+  background: linear-gradient(90deg, var(--cp-surface-alt) 25%, var(--cp-surface) 50%, var(--cp-surface-alt) 75%);
+  background-size: 200% 100%;
+  animation: cp-shimmer 1.5s ease-in-out infinite;
+}
+.cp-anim-pulse    { animation: cp-pulse 1.5s ease-in-out infinite; }
+.cp-anim-list-item {
+  animation: cp-list-item 250ms ease-out both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+.cp-anim-spin     { animation: cp-spin 800ms linear infinite; }
+
+/* Botón: feedback táctil */
+.cp-btn:active:not(:disabled) {
+  transform: scale(0.96) !important;
+}
+
+/* Cards/rows interactivas: feedback táctil */
+.cp-touchable {
+  transition: transform 100ms ease, background 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cp-touchable:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp-anim-pop,
+  .cp-anim-blink,
+  .cp-anim-slide-in,
+  .cp-anim-slide-up,
+  .cp-anim-fade-in,
+  .cp-anim-drop-in,
+  .cp-anim-rise-in,
+  .cp-anim-celebrate,
+  .cp-anim-shake,
+  .cp-anim-pulse,
+  .cp-anim-list-item,
+  .cp-anim-spin {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+  }
+  .cp-anim-shimmer {
+    animation: none !important;
+    background: var(--cp-surface-alt) !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Chulo Playa · Tema Bitácora (zona /gestion)
+   "Cuaderno de bitácora marina" — papel marfil, tinta azul profunda,
+   tipografía Gabarito en mayúsculas para títulos, Geist Mono tabular
+   para números. Hermana del tema Costa pero adaptada a una herramienta
+   de trabajo operativa.
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="bitacora"] {
+  --bt-paper: #F2EDE0;
+  --bt-paper-deep: #E6DEC9;
+  --bt-card: #FFFDF8;
+  --bt-card-alt: #F8F2E2;
+  --bt-ink: #0E2A38;
+  --bt-ink-soft: #4B6B78;
+  --bt-ink-faint: #8AA3AD;
+  --bt-line: rgba(14, 42, 56, 0.12);
+  --bt-line-strong: rgba(14, 42, 56, 0.32);
+  --bt-primary: #0A6E9E;
+  --bt-primary-12: rgba(10, 110, 158, 0.12);
+  --bt-primary-deep: #075578;
+  --bt-accent: #FFC23C;
+  --bt-accent-18: rgba(255, 194, 60, 0.20);
+  --bt-coral: #FF7657;
+  --bt-coral-14: rgba(255, 118, 87, 0.14);
+  --bt-success: #1F8A55;
+  --bt-success-14: rgba(31, 138, 85, 0.14);
+
+  background: var(--bt-paper);
+  color: var(--bt-ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+
+  /* Textura de papel: ruido sutil + retícula horizontal de cuaderno */
+  background-image:
+    linear-gradient(var(--bt-line) 1px, transparent 1px),
+    radial-gradient(circle at 25% 12%, rgba(14, 42, 56, 0.035), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(10, 110, 158, 0.05), transparent 55%);
+  background-size: 100% 36px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+
+[data-theme="bitacora"] .bt-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+[data-theme="bitacora"] .bt-stencil {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+[data-theme="bitacora"] .bt-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme="bitacora"] .bt-rule {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bt-line-strong) 0 6px,
+    transparent 6px 12px
+  );
+  height: 1px;
+}
+
+/* Tarjeta-ficha: borde de tinta, esquina con número de folio */
+[data-theme="bitacora"] .bt-card {
+  position: relative;
+  background: var(--bt-card);
+  border: 1px solid var(--bt-line-strong);
+  border-radius: 4px;
+  box-shadow:
+    0 1px 0 var(--bt-line),
+    0 8px 24px -16px rgba(14, 42, 56, 0.22);
+}
+
+[data-theme="bitacora"] .bt-card::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--bt-line);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+[data-theme="bitacora"] .bt-folio {
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  background: var(--bt-paper);
+  padding: 0 6px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--bt-ink-soft);
+  text-transform: uppercase;
+}
+
+[data-theme="bitacora"] .bt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--bt-line-strong);
+  border-radius: 999px;
+  background: var(--bt-card);
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bt-ink);
+}
+
+[data-theme="bitacora"] .bt-chip-primary { background: var(--bt-primary); color: #fff; border-color: var(--bt-primary-deep); }
+[data-theme="bitacora"] .bt-chip-accent  { background: var(--bt-accent); color: var(--bt-ink); border-color: rgba(0,0,0,0.18); }
+[data-theme="bitacora"] .bt-chip-coral   { background: var(--bt-coral-14); color: var(--bt-coral); border-color: var(--bt-coral); }
+[data-theme="bitacora"] .bt-chip-success { background: var(--bt-success-14); color: var(--bt-success); border-color: var(--bt-success); }
+[data-theme="bitacora"] .bt-chip-muted   { background: var(--bt-paper-deep); color: var(--bt-ink-soft); border-color: var(--bt-line); }
+
+/* Animación: entrada en cascada para items */
+@keyframes bt-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+[data-theme="bitacora"] .bt-anim-rise {
+  animation: bt-rise 380ms cubic-bezier(.16,1,.3,1) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+@keyframes bt-ink-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+[data-theme="bitacora"] .bt-anim-pulse { animation: bt-ink-pulse 1.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="bitacora"] .bt-anim-rise,
+  [data-theme="bitacora"] .bt-anim-pulse {
+    animation: none !important;
+  }
+}

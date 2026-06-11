@@ -1,0 +1,25 @@
+{
+  "name": "Chulo Playa",
+  "short_name": "Chulo Playa",
+  "description": "Alquiler de material de playa en el Puerto de Sagunto",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF7EC",
+  "theme_color": "#0A6E9E",
+  "orientation": "portrait",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
