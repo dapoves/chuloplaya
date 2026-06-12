@@ -69,6 +69,7 @@ export type Database = {
           id: string
           order_id: string
           product_id: string
+          telegram_return_notified: boolean
           updated_at: string
         }
         Insert: {
@@ -80,6 +81,7 @@ export type Database = {
           id?: string
           order_id: string
           product_id: string
+          telegram_return_notified?: boolean
           updated_at?: string
         }
         Update: {
@@ -91,6 +93,7 @@ export type Database = {
           id?: string
           order_id?: string
           product_id?: string
+          telegram_return_notified?: boolean
           updated_at?: string
         }
         Relationships: [
@@ -351,6 +354,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      telegram_chats: {
+        Row: {
+          id: string
+          chat_id: string
+          name: string
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          chat_id: string
+          name?: string
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          chat_id?: string
+          name?: string
+          active?: boolean
+          created_at?: string
+        }
+        Relationships: []
       }
       shifts: {
         Row: {

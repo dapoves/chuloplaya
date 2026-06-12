@@ -157,8 +157,63 @@ Deno.serve(async (req) => {
   }
 
   const sent = results.filter((r) => r.status === "fulfilled").length;
+
+  // Telegram: avisar a todos los chats registrados
+  let telegramSent = 0;
+  const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
+  if (botToken) {
+    const { data: orderDetail } = await admin
+      .from("orders")
+      .select(
+        `ubicacion_texto,
+         cliente:profiles!cliente_id(display_name, phone),
+         order_items(cantidad, product:products(nombre))`
+      )
+      .eq("id", payload.order_id)
+      .maybeSingle();
+
+    const clienteName =
+      (orderDetail?.cliente as any)?.display_name || "Cliente";
+    const clientePhone = (orderDetail?.cliente as any)?.phone || "";
+    const ubicacion = orderDetail?.ubicacion_texto || "No especificada";
+
+    const productLines = ((orderDetail?.order_items as any[]) ?? []).map(
+      (it: any) =>
+        `  • ${it.cantidad}x ${it.product?.nombre ?? "Producto"}`
+    );
+
+    const telegramMsg =
+      `🆕 <b>Nuevo pedido</b>\n\n` +
+      `👤 ${clienteName}${clientePhone ? ` (${clientePhone})` : ""}\n` +
+      `📍 ${ubicacion}\n\n` +
+      productLines.join("\n") +
+      `\n\n📋 <a href="https://chuloplaya.vercel.app/gestion/pedidos">Abrir pedidos</a>`;
+
+    const { data: chats } = await admin
+      .from("telegram_chats")
+      .select("chat_id")
+      .eq("active", true);
+
+    if (chats && chats.length > 0) {
+      const tgResults = await Promise.allSettled(
+        chats.map((c) =>
+          fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: c.chat_id,
+              text: telegramMsg,
+              parse_mode: "HTML",
+            }),
+          })
+        )
+      );
+      telegramSent = tgResults.filter((r) => r.status === "fulfilled").length;
+    }
+  }
+
   return Response.json(
-    { sent, removed: toRemove.length },
+    { sent, removed: toRemove.length, telegramSent },
     { headers: corsHeaders }
   );
 });
