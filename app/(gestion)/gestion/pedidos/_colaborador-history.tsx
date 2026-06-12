@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Clock,
   MapPin,
   Phone,
   ShieldAlert,
@@ -38,6 +39,20 @@ const STATUS_CHIP: Record<ItemStatus, { bg: string; color: string; border: strin
 
 function folioFromId(id: string): string {
   return id.replace(/-/g, "").slice(0, 6).toUpperCase();
+}
+
+function formatPrice(amount: number): string {
+  return amount % 1 === 0 ? `${amount}€` : `${amount.toFixed(2)}€`;
+}
+
+function formatHoraDevolucion(raw: string): string {
+  const d = new Date(raw);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  }
+  const match = raw.match(/^(\d{1,2}):(\d{2})/);
+  if (match) return `${match[1].padStart(2, "0")}:${match[2]}`;
+  return raw;
 }
 
 export async function ColaboradorHistory({
@@ -99,8 +114,8 @@ export async function ColaboradorHistory({
             `id, created_at, ubicacion_lat, ubicacion_lng, ubicacion_texto,
              motivo_cancelacion,
              cliente:profiles(id, phone, display_name, is_fraudulent),
-             order_items(id, cantidad, estado, colaborador_asignado_id,
-                         product:products(id, nombre))`
+             order_items(id, cantidad, estado, hora_devolucion, colaborador_asignado_id,
+                         product:products(id, nombre, precio))`
           )
           .in("id", pageIds)
           .order("created_at", { ascending: false })
@@ -234,44 +249,106 @@ export async function ColaboradorHistory({
                     </div>
                   </div>
 
-                  {/* Items */}
-                  <ul className="flex flex-col gap-1.5">
-                    {mine.map((it) => {
-                      const chip = STATUS_CHIP[it.estado];
-                      return (
-                        <li
-                          key={it.id}
-                          className="flex items-center justify-between gap-2 rounded-[3px] border px-3 py-2"
-                          style={{
-                            borderColor: "rgba(14,42,56,0.12)",
-                            background: "rgba(248,242,226,0.6)",
-                          }}
-                        >
-                          <div className="flex items-center gap-2 text-sm min-w-0">
-                            <span
-                              className="bt-mono shrink-0 font-semibold"
-                              style={{ color: "#0E2A38" }}
-                            >
-                              ×{it.cantidad}
-                            </span>
-                            <span className="truncate" style={{ color: "#0E2A38" }}>
-                              {it.product?.nombre ?? "—"}
-                            </span>
-                          </div>
-                          <span
-                            className="bt-chip shrink-0"
+                  {/* Items + total */}
+                  <div className="flex flex-col gap-1">
+                    <ul className="flex flex-col gap-1.5">
+                      {mine.map((it) => {
+                        const chip = STATUS_CHIP[it.estado];
+                        const subtotal = (it.product?.precio ?? 0) * it.cantidad;
+                        return (
+                          <li
+                            key={it.id}
+                            className="flex items-center justify-between gap-2 rounded-[3px] border px-3 py-2"
                             style={{
-                              background: chip.bg,
-                              color: chip.color,
-                              borderColor: chip.border,
+                              borderColor: "rgba(14,42,56,0.12)",
+                              background: "rgba(248,242,226,0.6)",
                             }}
                           >
-                            {STATUS_LABEL[it.estado]}
-                          </span>
-                        </li>
+                            <div className="flex items-center gap-2 text-sm min-w-0">
+                              <span
+                                className="bt-mono shrink-0 font-semibold"
+                                style={{ color: "#0E2A38" }}
+                              >
+                                ×{it.cantidad}
+                              </span>
+                              <span className="truncate" style={{ color: "#0E2A38" }}>
+                                {it.product?.nombre ?? "—"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span
+                                className="bt-mono text-[11px] tabular-nums"
+                                style={{ color: "#4B6B78" }}
+                              >
+                                {formatPrice(subtotal)}
+                              </span>
+                              <span
+                                className="bt-chip shrink-0"
+                                style={{
+                                  background: chip.bg,
+                                  color: chip.color,
+                                  borderColor: chip.border,
+                                }}
+                              >
+                                {STATUS_LABEL[it.estado]}
+                              </span>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {(() => {
+                      const total = mine.reduce(
+                        (acc, it) => acc + (it.product?.precio ?? 0) * it.cantidad,
+                        0
                       );
-                    })}
-                  </ul>
+                      return (
+                        <div
+                          className="flex items-center justify-end gap-2 border-t pt-2"
+                          style={{ borderColor: "rgba(14,42,56,0.12)" }}
+                        >
+                          <span
+                            className="bt-stencil text-[10px] uppercase tracking-[0.18em]"
+                            style={{ color: "#8AA3AD" }}
+                          >
+                            Total
+                          </span>
+                          <span
+                            className="bt-mono text-sm font-bold tabular-nums"
+                            style={{ color: "#0E2A38" }}
+                          >
+                            {formatPrice(total)}
+                          </span>
+                        </div>
+                      );
+                    })()}
+                    {(() => {
+                      const devItem = mine.find(
+                        (i) =>
+                          i.hora_devolucion &&
+                          (i.estado === "entregado" || i.estado === "pendiente_devolucion")
+                      );
+                      const raw = devItem?.hora_devolucion;
+                      if (!raw) return null;
+                      const hora = formatHoraDevolucion(raw);
+                      return (
+                        <div
+                          className="flex items-center gap-2 rounded-[3px] border px-3 py-2 text-sm font-semibold"
+                          style={{
+                            borderColor: "#0A6E9E",
+                            background: "rgba(10,110,158,0.08)",
+                            color: "#0A6E9E",
+                          }}
+                        >
+                          <Clock className="size-4 shrink-0" />
+                          <span className="bt-mono uppercase tracking-[0.18em] text-[11px]">
+                            Devolución
+                          </span>
+                          <span className="bt-mono text-base">{hora}</span>
+                        </div>
+                      );
+                    })()}
+                  </div>
 
                   {/* Contacto */}
                   {(o.ubicacion_texto || mapsUrl || o.cliente?.phone) && (

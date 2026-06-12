@@ -2,6 +2,15 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { createClient } from "@/lib/supabase/server";
 
 import { ClientesTable } from "./_table";
@@ -9,6 +18,26 @@ import { ClientesTable } from "./_table";
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 20;
+
+function buildPageHref(q: string, page: number) {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (page > 1) params.set("page", String(page));
+  const s = params.toString();
+  return `/gestion/clientes${s ? `?${s}` : ""}`;
+}
+
+function getPageRange(current: number, total: number): (number | "…")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | "…")[] = [1];
+  if (current > 3) pages.push("…");
+  for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
+    pages.push(p);
+  }
+  if (current < total - 2) pages.push("…");
+  pages.push(total);
+  return pages;
+}
 
 export default async function ClientesPage({
   searchParams,
@@ -31,21 +60,14 @@ export default async function ClientesPage({
   const rows = data ?? [];
   const total = rows[0]?.total_count ? Number(rows[0].total_count) : 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  const baseHref = (p: number) => {
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (p > 1) params.set("page", String(p));
-    const s = params.toString();
-    return `/gestion/clientes${s ? `?${s}` : ""}`;
-  };
+  const pageRange = getPageRange(page, totalPages);
 
   return (
     <div className="flex flex-col gap-6">
       <header>
         <h1 className="text-2xl font-bold">Clientes</h1>
         <p className="text-sm text-muted-foreground">
-          Marca como fraudulento a los clientes que no devuelvan el material.
+          Clientes que han realizado al menos un pedido. Marca como fraudulento a los que no devuelvan el material.
         </p>
       </header>
 
@@ -85,29 +107,49 @@ export default async function ClientesPage({
         <ClientesTable clientes={rows} />
       )}
 
-      {totalPages > 1 ? (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {total} clientes · página {page} de {totalPages}
-          </span>
-          <div className="flex items-center gap-2">
-            <Link href={baseHref(Math.max(1, page - 1))}>
-              <Button variant="outline" size="sm" disabled={page === 1}>
-                Anterior
-              </Button>
-            </Link>
-            <Link href={baseHref(Math.min(totalPages, page + 1))}>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === totalPages}
-              >
-                Siguiente
-              </Button>
-            </Link>
-          </div>
+      {totalPages > 1 && (
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-xs text-muted-foreground">
+            {total} cliente{total === 1 ? "" : "s"} · página {page} de {totalPages}
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={buildPageHref(q, Math.max(1, page - 1))}
+                  aria-disabled={page === 1}
+                  className={page === 1 ? "pointer-events-none opacity-40" : undefined}
+                />
+              </PaginationItem>
+
+              {pageRange.map((p, i) =>
+                p === "…" ? (
+                  <PaginationItem key={`ellipsis-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      href={buildPageHref(q, p)}
+                      isActive={p === page}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  href={buildPageHref(q, Math.min(totalPages, page + 1))}
+                  aria-disabled={page === totalPages}
+                  className={page === totalPages ? "pointer-events-none opacity-40" : undefined}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

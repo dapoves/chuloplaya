@@ -32,8 +32,11 @@ export default async function CatalogoPage() {
 
   // Stock disponible en este momento (suma de shifts abiertos − alquilado).
   const { data: stockRows } = await supabase.rpc("stock_disponible");
-  const stockMap = new Map<string, number>(
-    (stockRows ?? []).map((r) => [r.product_id, Number(r.disponible)])
+  const stockMap = new Map<string, { disponible: number; totalCargado: number }>(
+    (stockRows ?? []).map((r) => [
+      r.product_id,
+      { disponible: Number(r.disponible), totalCargado: Number(r.total_cargado) },
+    ])
   );
 
   // Marcamos como "Top ventas" los slugs destacados del handoff (sin nueva
@@ -53,7 +56,8 @@ export default async function CatalogoPage() {
       descripcion: p.descripcion ?? "",
       precio: Number(p.precio),
       categoria: p.categoria ?? "extras",
-      disponible: stockMap.get(p.id) ?? null,
+      disponible: stockMap.get(p.id)?.disponible ?? null,
+      totalCargado: stockMap.get(p.id)?.totalCargado ?? null,
       tag: TOP_SLUGS.has(p.slug ?? "") ? "Top ventas" : null,
     }));
 

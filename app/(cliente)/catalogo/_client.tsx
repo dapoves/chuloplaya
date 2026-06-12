@@ -21,6 +21,7 @@ export type CatalogProduct = {
   precio: number;
   categoria: string;
   disponible: number | null;
+  totalCargado: number | null;
   tag: string | null;
 };
 
@@ -379,7 +380,19 @@ function ProductRow({
   index?: number;
 }) {
   const outOfStock = product.disponible === 0;
+  const lastUnit =
+    !outOfStock &&
+    product.disponible === 1;
+  const agotandose =
+    !outOfStock &&
+    !lastUnit &&
+    product.totalCargado != null &&
+    product.totalCargado > 0 &&
+    product.disponible != null &&
+    product.disponible <= product.totalCargado * 0.5;
+
   return (
+    <div style={{ opacity: outOfStock ? 0.5 : 1, transition: "opacity .2s" }}>
     <Link
       href={`/producto/${product.slug}`}
       className="cp-touchable cp-anim-list-item"
@@ -396,7 +409,6 @@ function ProductRow({
         textDecoration: "none",
         color: "inherit",
         position: "relative",
-        opacity: outOfStock ? 0.55 : 1,
         "--i": Math.min(index, 8),
       } as React.CSSProperties}
     >
@@ -449,7 +461,7 @@ function ProductRow({
           {outOfStock && (
             <span
               style={{
-                marginLeft: 8,
+                marginLeft: 6,
                 fontSize: 11,
                 fontWeight: 700,
                 color: "var(--cp-coral)",
@@ -458,6 +470,34 @@ function ProductRow({
               }}
             >
               Sin stock
+            </span>
+          )}
+          {lastUnit && (
+            <span
+              style={{
+                marginLeft: 6,
+                fontSize: 11,
+                fontWeight: 700,
+                color: "var(--cp-coral)",
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+              }}
+            >
+              ¡Última unidad!
+            </span>
+          )}
+          {agotandose && (
+            <span
+              style={{
+                marginLeft: 6,
+                fontSize: 11,
+                fontWeight: 700,
+                color: "#D97706",
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+              }}
+            >
+              ¡Agotándose!
             </span>
           )}
         </div>
@@ -483,5 +523,6 @@ function ProductRow({
         {qtyInCart > 0 ? qtyInCart : <Icon name="plus" size={20} stroke={2.4} />}
       </div>
     </Link>
+    </div>
   );
 }

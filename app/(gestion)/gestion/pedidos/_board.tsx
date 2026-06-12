@@ -102,6 +102,10 @@ function nextStatus(
   }
 }
 
+function formatPrice(amount: number): string {
+  return amount % 1 === 0 ? `${amount}€` : `${amount.toFixed(2)}€`;
+}
+
 function formatHoraDevolucion(raw: string): string {
   const d = new Date(raw);
   if (!isNaN(d.getTime())) {
@@ -667,8 +671,10 @@ function PedidoCard({
           ) : null}
         </div>
 
-        {mode === "recogida" && (() => {
-          const devItem = group.items.find((i) => i.hora_devolucion);
+        {(() => {
+          const devItem = group.items.find(
+            (i) => i.hora_devolucion && (i.estado === "entregado" || i.estado === "pendiente_devolucion")
+          );
           if (!devItem?.hora_devolucion) return null;
           const hora = formatHoraDevolucion(devItem.hora_devolucion);
           const isPast = isDevolucionPast(devItem.hora_devolucion);
@@ -682,7 +688,7 @@ function PedidoCard({
             >
               <Clock className="size-4" />
               <span className="bt-mono uppercase tracking-[0.18em] text-[11px]">
-                Recogida
+                Devolución
               </span>
               <span className="bt-mono text-base">{hora}</span>
               {isPast ? (
@@ -695,22 +701,48 @@ function PedidoCard({
         })()}
 
         {/* Items */}
-        <ul className="flex flex-col gap-1.5">
-          {group.items.map((it) => (
-            <li
-              key={it.id}
-              className="flex items-center justify-between gap-2 rounded-[3px] border border-[color:var(--bt-line)] bg-[color:var(--bt-card-alt)]/60 px-3 py-2"
-            >
-              <div className="flex items-center gap-2 text-sm">
-                <span className="bt-mono w-8 shrink-0 text-right text-[color:var(--bt-ink)] font-semibold">
-                  ×{it.cantidad}
+        <div className="flex flex-col gap-1">
+          <ul className="flex flex-col gap-1.5">
+            {group.items.map((it) => {
+              const subtotal = (it.product?.precio ?? 0) * it.cantidad;
+              return (
+                <li
+                  key={it.id}
+                  className="flex items-center justify-between gap-2 rounded-[3px] border border-[color:var(--bt-line)] bg-[color:var(--bt-card-alt)]/60 px-3 py-2"
+                >
+                  <div className="flex items-center gap-2 text-sm min-w-0">
+                    <span className="bt-mono w-8 shrink-0 text-right text-[color:var(--bt-ink)] font-semibold">
+                      ×{it.cantidad}
+                    </span>
+                    <span className="truncate text-[color:var(--bt-ink)]">{it.product?.nombre ?? "—"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="bt-mono text-[11px] tabular-nums text-[color:var(--bt-ink-soft)]">
+                      {formatPrice(subtotal)}
+                    </span>
+                    <span className={STATUS_CHIP[it.estado]}>{STATUS_LABEL[it.estado]}</span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          {(() => {
+            const total = group.items.reduce(
+              (acc, it) => acc + (it.product?.precio ?? 0) * it.cantidad,
+              0
+            );
+            return (
+              <div className="flex items-center justify-end gap-2 border-t border-[color:var(--bt-line)] pt-2">
+                <span className="bt-stencil text-[10px] uppercase tracking-[0.18em] text-[color:var(--bt-ink-faint)]">
+                  Total
                 </span>
-                <span className="text-[color:var(--bt-ink)]">{it.product?.nombre ?? "—"}</span>
+                <span className="bt-mono text-sm font-bold tabular-nums text-[color:var(--bt-ink)]">
+                  {formatPrice(total)}
+                </span>
               </div>
-              <span className={STATUS_CHIP[it.estado]}>{STATUS_LABEL[it.estado]}</span>
-            </li>
-          ))}
-        </ul>
+            );
+          })()}
+        </div>
 
         {/* CTA por modo */}
         {mode === "mio" && (() => {

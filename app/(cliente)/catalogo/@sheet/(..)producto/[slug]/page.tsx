@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { loadProductBySlugOrId } from "../../_lib/load-product";
+import { loadProductBySlugOrId } from "../../../../_lib/load-product";
 import {
   ProductSheet,
   type ProductLite,
-} from "../../_components/product-sheet";
+} from "../../../../_components/product-sheet";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +15,7 @@ const TOP_SLUGS = new Set([
   "hamaca-ind",
 ]);
 
-export default async function ProductoPage({
+export default async function InterceptedProductSheet({
   params,
 }: {
   params: Promise<{ slug: string }>;

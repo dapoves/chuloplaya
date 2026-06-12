@@ -43,7 +43,7 @@ export default async function AdminDashboardPage() {
     last7Res,
     last30Res,
     allOrdersRes,
-    profilesRes,
+    clientStatsRes,
   ] = await Promise.all([
     supabase.from("products").select("id, nombre, precio"),
     supabase
@@ -61,10 +61,8 @@ export default async function AdminDashboardPage() {
     supabase
       .from("orders")
       .select("id, order_items(product_id, cantidad, estado)"),
-    supabase
-      .from("profiles")
-      .select("id, is_fraudulent")
-      .eq("role", "cliente"),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.rpc as any)("count_real_clients") as Promise<{ data: { total: number; fraudulent: number }[] | null; error: unknown }>,
   ]);
 
   const products = productsRes.data ?? [];
@@ -92,10 +90,10 @@ export default async function AdminDashboardPage() {
     }
   }
 
-  // KPI 3: clientes
-  const clientes = profilesRes.data ?? [];
-  const totalClientes = clientes.length;
-  const clientesFlagged = clientes.filter((c) => c.is_fraudulent).length;
+  // KPI 3: clientes reales (con email o con al menos un pedido)
+  const clientStats = clientStatsRes.data?.[0];
+  const totalClientes = Number(clientStats?.total ?? 0);
+  const clientesFlagged = Number(clientStats?.fraudulent ?? 0);
   const ratioFraude = totalClientes
     ? Math.round((clientesFlagged / totalClientes) * 1000) / 10
     : 0;
