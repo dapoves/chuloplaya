@@ -31,7 +31,7 @@ export async function requestAccount(email: string): Promise<RequestAccountResul
 
   const { error } = await supabase.auth.updateUser(
     { email: clean },
-    { emailRedirectTo: `${origin}/auth/callback?next=/mi-cuenta` }
+    { emailRedirectTo: `${origin}/auth/callback` }
   );
   if (error) return { ok: false, error: error.message };
 

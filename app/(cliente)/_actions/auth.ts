@@ -21,7 +21,10 @@ async function siteOrigin() {
 }
 
 function callbackUrl(origin: string) {
-  return `${origin}/auth/callback?next=/mi-cuenta`;
+  // Sin query: el callback ya redirige a /mi-cuenta por defecto. Mantenerlo
+  // limpio asegura que casa con la allowlist de Supabase (un query no incluido
+  // en la lista hace que Supabase caiga al "Site URL" — p. ej. localhost).
+  return `${origin}/auth/callback`;
 }
 
 /**
