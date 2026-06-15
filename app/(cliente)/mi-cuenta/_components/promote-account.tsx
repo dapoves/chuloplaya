@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createAccount, signInWithEmail } from "../../_actions/auth";
+import {
+  createAccount,
+  signInWithEmail,
+  signInWithGoogle,
+} from "../../_actions/auth";
 import { ChuloButton } from "../../_components/chulo-button";
 import { Field } from "../../_components/field";
+import { GoogleMark } from "../../_icons/google-mark";
 import { Icon } from "../../_icons/icon";
 
 type Mode = "create" | "login";
@@ -41,6 +46,18 @@ export function PromoteAccount({
       if (res.ok) {
         setSent(true);
       } else if ("redirect" in res && res.redirect) {
+        window.location.href = res.redirect;
+      } else if ("error" in res) {
+        setError(res.error);
+      }
+    });
+  };
+
+  const continueWithGoogle = () => {
+    start(async () => {
+      setError(null);
+      const res = await signInWithGoogle(mode);
+      if ("redirect" in res && res.redirect) {
         window.location.href = res.redirect;
       } else if ("error" in res) {
         setError(res.error);
@@ -135,6 +152,51 @@ export function PromoteAccount({
           ? "Crea una cuenta para guardar tu nombre, teléfono e historial de pedidos."
           : "Te enviaremos un enlace a tu email para entrar en tu cuenta."}
       </p>
+
+      {/* Continuar con Google */}
+      <button
+        type="button"
+        onClick={continueWithGoogle}
+        disabled={pending}
+        className="cp-btn"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+          width: "100%",
+          padding: "12px 16px",
+          borderRadius: "var(--cp-btn-radius)",
+          border: "1.5px solid var(--cp-line)",
+          background: "var(--cp-surface)",
+          color: "var(--cp-ink)",
+          fontFamily: "inherit",
+          fontWeight: 700,
+          fontSize: 14.5,
+          cursor: pending ? "not-allowed" : "pointer",
+          opacity: pending ? 0.55 : 1,
+          WebkitTapHighlightColor: "transparent",
+        }}
+      >
+        <GoogleMark size={18} />
+        {mode === "create" ? "Crear cuenta con Google" : "Entrar con Google"}
+      </button>
+
+      {/* Separador */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          color: "var(--cp-ink-faint)",
+          fontSize: 12,
+          fontWeight: 600,
+        }}
+      >
+        <span style={{ flex: 1, height: 1, background: "var(--cp-line)" }} />
+        o
+        <span style={{ flex: 1, height: 1, background: "var(--cp-line)" }} />
+      </div>
 
       {mode === "create" && (
         <>

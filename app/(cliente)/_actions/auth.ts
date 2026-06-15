@@ -78,6 +78,62 @@ export async function createAccount(input: {
 }
 
 /**
+ * Inicia sesión / crea cuenta con Google (OAuth, flujo PKCE).
+ *
+ * - `intent: "create"` con sesión anónima → `linkIdentity`: enlaza la identidad
+ *   de Google al usuario actual, conservando carrito e historial (mismo id).
+ * - `intent: "login"` o sin sesión anónima → `signInWithOAuth`: entra en la
+ *   cuenta de Google (la crea si no existe), reemplazando la sesión anónima.
+ *
+ * Devuelve la URL de Google en `redirect` para que el cliente navegue
+ * (`skipBrowserRedirect`); la cookie del verifier PKCE queda escrita por esta
+ * server action y `/auth/callback` la canjea por sesión.
+ */
+export async function signInWithGoogle(
+  intent: "create" | "login"
+): Promise<AuthResult> {
+  const supabase = await createClient();
+  const redirectTo = callbackUrl(await siteOrigin());
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (intent === "create" && user?.is_anonymous) {
+    const { data, error } = await supabase.auth.linkIdentity({
+      provider: "google",
+      options: { redirectTo, skipBrowserRedirect: true },
+    });
+    if (error) return { ok: false, error: googleAuthError(error) };
+    if (!data?.url) return { ok: false, error: "No se pudo conectar con Google." };
+    return { ok: false, redirect: data.url };
+  }
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo, skipBrowserRedirect: true },
+  });
+  if (error) return { ok: false, error: googleAuthError(error) };
+  if (!data?.url) return { ok: false, error: "No se pudo conectar con Google." };
+  return { ok: false, redirect: data.url };
+}
+
+/** Mensajes claros para los fallos del flujo OAuth de Google. */
+function googleAuthError(error: { code?: string; message?: string }): string {
+  // El error real va al log del servidor para depurar.
+  console.error("[signInWithGoogle]", error.code ?? "", error.message ?? error);
+  const code = error.code ?? "";
+  const msg = error.message?.toLowerCase() ?? "";
+  if (code === "manual_linking_disabled" || msg.includes("manual linking")) {
+    return "La conexión con Google aún no está activada. Activa “Manual linking” en Supabase.";
+  }
+  if (msg.includes("provider is not enabled") || msg.includes("validation_failed")) {
+    return "Google no está habilitado como proveedor en Supabase.";
+  }
+  return "No hemos podido conectar con Google. Inténtalo de nuevo en un momento.";
+}
+
+/**
  * Inicia sesión en una cuenta existente enviando un magic link.
  * No crea usuario nuevo (`shouldCreateUser: false`): si el email no tiene
  * cuenta, devolvemos un mensaje genérico.

@@ -4,7 +4,9 @@ import { useState, useTransition } from "react";
 import { motion } from "framer-motion";
 
 import { Icon } from "../_icons/icon";
+import { GoogleMark } from "../_icons/google-mark";
 import { requestAccount } from "../_actions/request-account";
+import { signInWithGoogle } from "../_actions/auth";
 import { ChuloButton } from "./chulo-button";
 import { Field } from "./field";
 
@@ -32,6 +34,20 @@ export function AccountPrompt({
       const res = await requestAccount(value);
       if (res.ok) setStatus("sent");
       else {
+        setError(res.error);
+        setStatus("error");
+      }
+    });
+  };
+
+  const continueWithGoogle = () => {
+    start(async () => {
+      setError(null);
+      // Sesión anónima con pedido en curso → "create" enlaza Google y conserva el pedido.
+      const res = await signInWithGoogle("create");
+      if ("redirect" in res && res.redirect) {
+        window.location.href = res.redirect;
+      } else if ("error" in res) {
         setError(res.error);
         setStatus("error");
       }
@@ -159,6 +175,50 @@ export function AccountPrompt({
             los próximos sin volver a meter tus datos.
           </p>
           <div style={{ marginTop: 14 }}>
+            <button
+              type="button"
+              onClick={continueWithGoogle}
+              disabled={pending}
+              className="cp-btn"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+                width: "100%",
+                padding: "12px 16px",
+                borderRadius: "var(--cp-btn-radius)",
+                border: "1.5px solid var(--cp-line)",
+                background: "var(--cp-surface)",
+                color: "var(--cp-ink)",
+                fontFamily: "inherit",
+                fontWeight: 700,
+                fontSize: 14.5,
+                cursor: pending ? "not-allowed" : "pointer",
+                opacity: pending ? 0.55 : 1,
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              <GoogleMark size={18} />
+              Crear cuenta con Google
+            </button>
+          </div>
+          <div
+            style={{
+              marginTop: 12,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              color: "var(--cp-ink-faint)",
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            <span style={{ flex: 1, height: 1, background: "var(--cp-line)" }} />
+            o
+            <span style={{ flex: 1, height: 1, background: "var(--cp-line)" }} />
+          </div>
+          <div style={{ marginTop: 12 }}>
             <Field
               type="email"
               placeholder="Tu email"
